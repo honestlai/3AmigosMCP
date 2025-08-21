@@ -2,46 +2,80 @@
 
 A robust, production-ready Docker container for running multiple MCP (Model Context Protocol) servers with **command-based execution** to eliminate SSH tunnel connection issues.
 
-## Meet the Amigos:
+## About This Project
+
+After discovering, using, and being absolutely blown away by the possibilities of Playwright MCP, I started exploring other complementary MCP projects that could work together. This led me to what I call the "Three Amigos" - a powerful trio that I believe will be essential for most small to medium-sized projects I'll be building or experimenting with.
+
+The idea was simple: combine browser automation, file system access, and database operations into one seamless container. Why? Because when you're building modern applications, you're almost always working with web interfaces, managing files, and handling data. Having all three capabilities available directly in your AI coding environment just makes sense.
+
+## Meet the Amigos
+
 🎭 **Playwright** - The Browser Whisperer
-📁 **Filesystem** - The File Wrangler  
+- Full browser automation and web scraping
+- Screenshot capture and visual testing
+- Form filling and navigation automation
+- Mobile device emulation and responsive testing
+- PDF generation from web pages
+- Network interception and debugging
+
+📁 **Filesystem** - The File Wrangler
+- File and directory operations
+- Read/write access to your workspace
+- Secure access control and permissions
+- File watching and monitoring
+- Batch file operations
+- Workspace organization and management
+
 🗄️ **Database** - The Data Guardian
+- Multi-database support (SQLite, PostgreSQL, MySQL)
+- Query execution and data management
+- Database schema exploration
+- Data import/export operations
+- Connection pooling and optimization
+- Environment-based configuration
 
-## 🎯 **Problem Solved**
+## 🏗️ Architecture
 
-**Original Issue**: Cursor/VS Code MCP connections dropping over SSH tunnels, causing red/green bubble cycling.
+This container provides two connection modes optimized for different deployment scenarios:
 
-**Root Cause**: URL-based MCP connections (`"url": "http://localhost:8081/mcp"`) over SSH tunnels create multiple failure points:
+### **Command-Based Mode (Recommended for SSH/Remote)**
 
-* Laptop → SSH tunnel → Cloudflare → server → Docker container → MCP server
-* SSE timeouts after 5 minutes of idle time
-* Persistent connections that can drop unexpectedly
+* **Best for**: SSH tunnels, remote servers, Cloudflare connections
+* **How it works**: Client executes MCP servers directly via `docker exec`
+* **Benefits**: No persistent HTTP connections, eliminates timeout issues
+* **Use case**: When you're connecting over SSH or experiencing connection drops
 
-**Solution**: **Command-based MCP configuration** that executes the MCP servers directly inside the container, eliminating HTTP timeouts and connection state issues.
+### **HTTP Mode (Suitable for Local)**
 
-## 🚀 **Quick Start**
+* **Best for**: Local development, direct connections
+* **How it works**: MCP servers run as HTTP services on ports 8091-8093
+* **Benefits**: Standard MCP protocol, familiar HTTP endpoints
+* **Use case**: When running locally without network issues
 
-### **1\. Start the Container**
+## 🚀 Quick Start
+
+### Prerequisites
+
+* Docker and Docker Compose installed
+* Cursor or VS Code with MCP support
+
+### 1\. Clone and Start
 
 ```bash
+git clone https://github.com/honestlai/3AmigosMCP.git
+cd 3AmigosMCP
 docker compose up -d
 ```
 
-### **2\. Verify Container Health**
+### 2\. Verify Everything is Working
 
 ```bash
-docker ps
+./test-mcps.sh
 ```
 
-### **3\. Configure Your MCP Client**
+### 3\. Configure Your MCP Client
 
-Use the command-based configuration below.
-
-## 📋 **MCP Client Configuration**
-
-### **Command-Based Configuration (Recommended)**
-
-**This eliminates SSH tunnel connection issues** by executing MCPs directly in the container:
+#### For Command-Based Mode (SSH/Remote Recommended)
 
 ```json
 {
@@ -92,9 +126,7 @@ Use the command-based configuration below.
 }
 ```
 
-### **Alternative: Enhanced HTTP Configuration**
-
-If you prefer HTTP-based connections (less reliable over SSH):
+#### For HTTP Mode (Local Development)
 
 ```json
 {
@@ -103,13 +135,7 @@ If you prefer HTTP-based connections (less reliable over SSH):
       "url": "http://localhost:8091/mcp",
       "retryDelay": 1000,
       "maxRetries": 20,
-      "timeout": 60000,
-      "backoffMultiplier": 2.0,
-      "maxRetryDelay": 15000,
-      "connectionTimeout": 15000,
-      "keepAlive": true,
-      "retryOnTimeout": true,
-      "retryOnConnectionError": true
+      "timeout": 60000
     },
     "Filesystem_MCP": {
       "url": "http://localhost:8092/mcp",
@@ -127,195 +153,182 @@ If you prefer HTTP-based connections (less reliable over SSH):
 }
 ```
 
-## 🔧 **Management Commands**
+## 📊 Connection Mode Comparison
 
-### **Container Management**
+| Feature                | Command-Based  | HTTP Mode         |
+| ---------------------- | -------------- | ----------------- |
+| **SSH Stability**      | ✅ Excellent    | ⚠️ May timeout    |
+| **Connection Drops**   | ✅ None         | ⚠️ Can occur      |
+| **Setup Complexity**   | ⚠️ More config | ✅ Simple          |
+| **Performance**        | ✅ Optimal      | ✅ Good            |
+| **Local Development**  | ✅ Works        | ✅ Works           |
+| **Remote Development** | ✅ Recommended  | ❌ Not recommended |
+
+## 🛠️ Usage Examples
+
+### Browser Automation with Playwright
+
+```javascript
+// Navigate to a website
+await browser.navigate({ url: "https://example.com" });
+
+// Take a screenshot
+await browser.take_screenshot({ 
+  filename: "screenshot.png",
+  fullPage: true 
+});
+
+// Fill a form
+await browser.type({ 
+  element: "input[name='username']", 
+  text: "myuser" 
+});
+```
+
+### File Operations with Filesystem
+
+```javascript
+// Read a file
+const content = await filesystem.readFile({ path: "config.json" });
+
+// Write a file
+await filesystem.writeFile({ 
+  path: "output.txt", 
+  content: "Hello, World!" 
+});
+
+// List directory contents
+const files = await filesystem.listDir({ path: "/workspace" });
+```
+
+### Database Operations
+
+```javascript
+// Execute a query
+const results = await database.query({ 
+  sql: "SELECT * FROM users WHERE active = true" 
+});
+
+// Insert data
+await database.execute({ 
+  sql: "INSERT INTO logs (message, timestamp) VALUES (?, ?)",
+  params: ["User logged in", new Date().toISOString()]
+});
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+```yaml
+# docker-compose.yml
+environment:
+  - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+  - NODE_ENV=production
+```
+
+### Port Mapping
+
+```yaml
+ports:
+  - "8091:8081"  # Playwright MCP
+  - "8092:8082"  # Filesystem MCP
+  - "8093:8083"  # Database MCP
+```
+
+### Volume Mounts
+
+```yaml
+volumes:
+  - ./workspace:/workspace  # Filesystem MCP root
+  - ./data:/data            # Database storage
+```
+
+## 🔍 Troubleshooting
+
+### Container Health
 
 ```bash
-# Start container
-docker compose up -d
-
-# Stop container
-docker compose down
-
-# Restart container
-docker compose restart
+# Check container status
+docker ps | grep 3amigosmcp
 
 # View logs
-docker compose logs -f
-
-# Check status
-docker ps
-```
-
-### **Health Check**
-
-```bash
-# Test MCP endpoints
-curl -v http://localhost:8091/mcp
-curl -v http://localhost:8092/mcp
-curl -v http://localhost:8093/mcp
-
-# Check container health
-docker inspect --format='{{.State.Health.Status}}' 3amigosmcp
-```
-
-## 🏗️ **Architecture**
-
-### **Command-Based Approach (Recommended)**
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   VS Code       │    │   SSH Tunnel    │    │   Docker        │
-│   / Cursor      │───▶│   (Cloudflare)  │───▶│   Container     │
-│                 │    │                 │    │                 │
-│ Command-based   │    │ No persistent   │    │ Direct MCP      │
-│ MCP execution   │    │ connections     │    │ execution       │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-### **Why Command-Based Works Better**
-
-* ✅ **No HTTP layer** to timeout
-* ✅ **No persistent connections** that can drop
-* ✅ **Fresh execution** for each MCP interaction
-* ✅ **Direct communication** with container
-* ✅ **Eliminates connection state issues**
-
-## 🔍 **Monitoring & Troubleshooting**
-
-### **Check Container Health**
-
-```bash
-# Check if container is running
-docker ps
-
-# Check container health status
-docker inspect --format='{{.State.Health.Status}}' 3amigosmcp
-
-# View container logs
 docker logs 3amigosmcp
+
+# Health check
+docker inspect --format='{{.State.Health.Status}}' 3amigosmcp
+
+# Test all MCPs
+./test-mcps.sh
 ```
 
-### **Test MCP Connections**
+### Common Issues
 
-```bash
-# Test HTTP endpoints (if using HTTP config)
-curl -v http://localhost:8081/mcp
-curl -v http://localhost:8082/mcp
-curl -v http://localhost:8083/mcp
+#### Connection Drops (SSH/Remote)
 
-# Test command-based execution
-docker exec -i 3amigosmcp npx @playwright/mcp@latest --help
-docker exec -i 3amigosmcp npx @modelcontextprotocol/server-filesystem --help
-docker exec -i 3amigosmcp npx @modelcontextprotocol/server-sqlite --help
-```
+* **Solution**: Switch to command-based mode
+* **Why**: Eliminates persistent HTTP connections that can timeout
 
-### **Resource Usage**
+#### Container Won't Start
 
-```bash
-# Check resource usage
-docker stats 3amigosmcp
+* **Check**: Port 8091-8093 availability
+* **Fix**: `docker compose down && docker compose up -d`
 
-# Check memory usage
-docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
-```
+#### MCP Tools Not Available
 
-## 🛠️ **Troubleshooting**
+* **Check**: Client configuration
+* **Verify**: Container is healthy and running
+* **Test**: Run `./test-mcps.sh` to verify all MCPs
 
-### **Common Issues**
+## 📈 Performance
 
-#### **1\. Container Not Starting**
+### Resource Usage
 
-```bash
-# Check logs for errors
-docker compose logs
+* **Memory**: ~300MB typical usage
+* **CPU**: Low usage during idle
+* **Network**: Minimal overhead
 
-# Rebuild container
-docker compose down
-docker compose build --no-cache
-docker compose up -d
-```
+### Optimization Tips
 
-#### **2\. MCP Command Execution Fails**
+* Use `--headless` mode for Playwright automation
+* Enable `--isolated` for clean browser sessions
+* Monitor resource usage with `docker stats`
 
-```bash
-# Test commands manually
-docker exec -i 3amigosmcp npx @playwright/mcp@latest --help
-docker exec -i 3amigosmcp npx @modelcontextprotocol/server-filesystem --help
-docker exec -i 3amigosmcp npx @ahmetbarut/mcp-database-server --help
+## 🎯 Why These Three MCPs?
 
-# Check container permissions
-docker exec -it 3amigosmcp whoami
-```
+The combination of Playwright, Filesystem, and Database MCPs covers the most common development scenarios:
 
-#### **3\. VS Code/Cursor Can't Connect**
+1. **Web Development**: Playwright handles browser automation, testing, and web scraping
+2. **File Management**: Filesystem MCP provides workspace organization and file operations
+3. **Data Operations**: Database MCP enables data persistence, queries, and analysis
 
-* Verify container is running: `docker ps`
-* Check MCP configuration syntax
-* Restart VS Code/Cursor after configuration changes
-* Ensure Docker is accessible from your SSH session
+Together, they create a comprehensive development environment that can handle everything from simple scripts to complex web applications.
 
-### **Debugging Commands**
+## 🤝 Contributing
 
-```bash
-# Enter container for debugging
-docker exec -it 3amigosmcp /bin/bash
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly with `./test-mcps.sh`
+5. Submit a pull request
 
-# Check MCP processes
-docker exec 3amigosmcp ps aux | grep mcp
+## 📄 License
 
-# Test MCP servers directly
-docker exec -i 3amigosmcp npx @playwright/mcp@latest --port 8080 --host 0.0.0.0
-docker exec -i 3amigosmcp npx @modelcontextprotocol/server-filesystem /workspace
-docker exec -i 3amigosmcp npx @ahmetbarut/mcp-database-server --database /data/data.db
-```
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 📊 **Performance & Reliability**
+## 🙏 Acknowledgments
 
-| Feature              | Command-Based | HTTP-Based     |
-| -------------------- | ------------- | -------------- |
-| **SSH Stability**    | ✅ Excellent   | ⚠️ Problematic |
-| **Connection Drops** | ✅ None        | ❌ Frequent     |
-| **Timeout Issues**   | ✅ None        | ❌ Common       |
-| **Setup Complexity** | ⚠️ Moderate   | ✅ Simple       |
-| **Debugging**        | ✅ Easy        | ⚠️ Complex     |
+* Playwright for the amazing browser automation framework
+* Model Context Protocol for the MCP specification
+* The Cursor/VS Code community for MCP integration
+* The MCP ecosystem for providing these powerful tools
 
-## 🎯 **Getting Started**
+---
 
-1. **Start the container**:  
-   ```bash
-   docker compose up -d
-   ```
-2. **Configure your MCP client** using the command-based configuration above
-3. **Test the connections**:  
-   ```bash
-   docker exec -i 3amigosmcp npx @playwright/mcp@latest --help
-   docker exec -i 3amigosmcp npx @modelcontextprotocol/server-filesystem --help
-   docker exec -i 3amigosmcp npx @ahmetbarut/mcp-database-server --help
-   ```
-4. **Monitor health**:  
-   ```bash
-   docker ps  
-   docker logs 3amigosmcp
-   ```
+**Ready to supercharge your development workflow?** 🚀
 
-## 📝 **Configuration Files**
+The Three Amigos bring together browser automation, file management, and database operations into one seamless container. Whether you're building web applications, managing data, or automating workflows, these MCPs provide the tools you need right in your editor.
 
-* `docker-compose.yml` - Container orchestration
-* `Dockerfile` - Container image definition
-* `healthcheck.sh` - Health monitoring script
-* `cursor-mcp-config.json` - Example Cursor configuration
+## About
 
-## 📚 **Documentation**
-
-* **MCP Client Setup Guide** - Detailed configuration guide
-* **Cursor Setup Guide** - VS Code/Cursor specific setup
-
-## 🤝 **Contributing**
-
-Feel free to submit issues and enhancement requests!
-
-## 📄 **License**
-
-This project is open source and available under the MIT License.
+A comprehensive Docker container combining Playwright, Filesystem, and Database MCP servers for enhanced development workflows.
