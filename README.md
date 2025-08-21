@@ -1,12 +1,12 @@
-# 3AmigosMCP
+## About The 3 Amigos MCP
 
-A robust, production-ready Docker container for running multiple MCP (Model Context Protocol) servers with **command-based execution** to eliminate SSH tunnel connection issues.
-
-## About This Project
-
-After discovering, using, and being absolutely blown away by the possibilities of Playwright MCP, I started exploring other complementary MCP projects that could work together. This led me to what I call the "Three Amigos" - a powerful trio that I believe will be essential for most small to medium-sized projects I'll be building or experimenting with.
+After discovering, using, and being absolutely blown away by the possibilities of Playwright MCP, I started looking around for other complementary MCP projects I could/should put together. This led me to what I call the "Three Amigos" - a powerful trio that I believe will be essential for most small to medium-sized projects I'll be building or experimenting with.
 
 The idea was simple: combine browser automation, file system access, and database operations into one seamless container. Why? Because when you're building modern applications, you're almost always working with web interfaces, managing files, and handling data. Having all three capabilities available directly in your AI coding environment just makes sense.
+
+I feel like moving forward most small to medium sized projects I'll be building or experimenting on will likely benefit greatly from these '3 amigos'.
+
+*Note: A container hub build is on its way... I know this is kind of a hefty 3-headed beast to build :P*
 
 ## Meet the Amigos
 
