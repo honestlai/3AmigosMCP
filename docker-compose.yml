@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  3AmigosMCP:
+    build: .
+    container_name: 3AmigosMCP
+    ports:
+      - "8081:8081"  # Playwright MCP
+      - "8082:8082"  # Filesystem MCP
+      - "8083:8083"  # Database MCP
+    volumes:
+      - ./workspace:/home/playwright/workspace
+      - ./data:/home/playwright/data
+    environment:
+      - PLAYWRIGHT_BROWSERS_PATH=/home/playwright/.cache/ms-playwright
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
