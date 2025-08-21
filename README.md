@@ -89,7 +89,8 @@ docker compose up -d
         "npx",
         "@playwright/mcp@latest",
         "--headless",
-        "--isolated"
+        "--isolated",
+        "--no-sandbox"
       ]
     },
     "Filesystem_MCP": {

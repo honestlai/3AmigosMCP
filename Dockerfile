@@ -19,6 +19,9 @@ RUN npm install -g @playwright/mcp@latest \
     @modelcontextprotocol/server-filesystem@latest \
     @ahmetbarut/mcp-database-server@latest
 
+# Install Playwright browsers
+RUN npx playwright install --with-deps
+
 # Create workspace directory
 RUN mkdir -p /workspace /data
 
