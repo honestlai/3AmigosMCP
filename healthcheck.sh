@@ -27,19 +27,25 @@ if ! npx @playwright/mcp@latest --help &> /dev/null; then
     exit 1
 fi
 
-if ! npx @modelcontextprotocol/server-filesystem --help &> /dev/null; then
+if ! timeout 5s npx @modelcontextprotocol/server-filesystem /workspace &> /dev/null; then
     echo "Filesystem MCP not available"
     exit 1
 fi
 
-if ! npx @modelcontextprotocol/server-sqlite --help &> /dev/null; then
+if ! timeout 5s npx @ahmetbarut/mcp-database-server &> /dev/null; then
     echo "Database MCP not available"
     exit 1
 fi
 
 # Check if workspace directory exists
-if [ ! -d "/home/playwright/workspace" ]; then
+if [ ! -d "/workspace" ]; then
     echo "Workspace directory not found"
+    exit 1
+fi
+
+# Check if data directory exists
+if [ ! -d "/data" ]; then
+    echo "Data directory not found"
     exit 1
 fi
 

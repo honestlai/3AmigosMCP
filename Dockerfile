@@ -2,33 +2,28 @@ FROM mcr.microsoft.com/playwright:v1.40.0-focal
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PLAYWRIGHT_BROWSERS_PATH=/home/playwright/.cache/ms-playwright
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
-# Install system dependencies
+# Install system dependencies and Node.js
 RUN apt-get update && apt-get install -y \
     curl \
     wget \
     git \
     sqlite3 \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
-
-# Switch to playwright user
-USER playwright
-
-# Install Node.js and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - \
-    && sudo apt-get install -y nodejs
 
 # Install MCP servers
 RUN npm install -g @playwright/mcp@latest \
     @modelcontextprotocol/server-filesystem@latest \
-    @modelcontextprotocol/server-sqlite@latest
+    @ahmetbarut/mcp-database-server@latest
 
 # Create workspace directory
-RUN mkdir -p /home/playwright/workspace
+RUN mkdir -p /workspace /data
 
 # Set working directory
-WORKDIR /home/playwright/workspace
+WORKDIR /workspace
 
 # Expose ports for MCP servers
 EXPOSE 8081 8082 8083

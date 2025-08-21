@@ -51,7 +51,7 @@ Use the command-based configuration below.
       "args": [
         "exec",
         "-i",
-        "3AmigosMCP",
+        "3amigosmcp",
         "npx",
         "@playwright/mcp@latest",
         "--port",
@@ -62,7 +62,7 @@ Use the command-based configuration below.
         "--isolated"
       ],
       "env": {
-        "PLAYWRIGHT_BROWSERS_PATH": "/home/playwright/.cache/ms-playwright"
+        "PLAYWRIGHT_BROWSERS_PATH": "/ms-playwright"
       }
     },
     "Filesystem_MCP": {
@@ -70,10 +70,9 @@ Use the command-based configuration below.
       "args": [
         "exec",
         "-i",
-        "3AmigosMCP",
+        "3amigosmcp",
         "npx",
         "@modelcontextprotocol/server-filesystem",
-        "--root-dir",
         "/workspace"
       ]
     },
@@ -82,11 +81,11 @@ Use the command-based configuration below.
       "args": [
         "exec",
         "-i",
-        "3AmigosMCP",
+        "3amigosmcp",
         "npx",
-        "@modelcontextprotocol/server-sqlite",
+        "@ahmetbarut/mcp-database-server",
         "--database",
-        "/workspace/data.db"
+        "/data/data.db"
       ]
     }
   }
@@ -101,7 +100,7 @@ If you prefer HTTP-based connections (less reliable over SSH):
 {
   "mcpServers": {
     "Playwright_MCP": {
-      "url": "http://localhost:8081/mcp",
+      "url": "http://localhost:8091/mcp",
       "retryDelay": 1000,
       "maxRetries": 20,
       "timeout": 60000,
@@ -113,13 +112,13 @@ If you prefer HTTP-based connections (less reliable over SSH):
       "retryOnConnectionError": true
     },
     "Filesystem_MCP": {
-      "url": "http://localhost:8082/mcp",
+      "url": "http://localhost:8092/mcp",
       "retryDelay": 1000,
       "maxRetries": 20,
       "timeout": 60000
     },
     "Database_MCP": {
-      "url": "http://localhost:8083/mcp",
+      "url": "http://localhost:8093/mcp",
       "retryDelay": 1000,
       "maxRetries": 20,
       "timeout": 60000
@@ -153,12 +152,12 @@ docker ps
 
 ```bash
 # Test MCP endpoints
-curl -v http://localhost:8081/mcp
-curl -v http://localhost:8082/mcp
-curl -v http://localhost:8083/mcp
+curl -v http://localhost:8091/mcp
+curl -v http://localhost:8092/mcp
+curl -v http://localhost:8093/mcp
 
 # Check container health
-docker inspect --format='{{.State.Health.Status}}' 3AmigosMCP
+docker inspect --format='{{.State.Health.Status}}' 3amigosmcp
 ```
 
 ## 🏗️ **Architecture**
@@ -192,10 +191,10 @@ docker inspect --format='{{.State.Health.Status}}' 3AmigosMCP
 docker ps
 
 # Check container health status
-docker inspect --format='{{.State.Health.Status}}' 3AmigosMCP
+docker inspect --format='{{.State.Health.Status}}' 3amigosmcp
 
 # View container logs
-docker logs 3AmigosMCP
+docker logs 3amigosmcp
 ```
 
 ### **Test MCP Connections**
@@ -207,16 +206,16 @@ curl -v http://localhost:8082/mcp
 curl -v http://localhost:8083/mcp
 
 # Test command-based execution
-docker exec -i 3AmigosMCP npx @playwright/mcp@latest --help
-docker exec -i 3AmigosMCP npx @modelcontextprotocol/server-filesystem --help
-docker exec -i 3AmigosMCP npx @modelcontextprotocol/server-sqlite --help
+docker exec -i 3amigosmcp npx @playwright/mcp@latest --help
+docker exec -i 3amigosmcp npx @modelcontextprotocol/server-filesystem --help
+docker exec -i 3amigosmcp npx @modelcontextprotocol/server-sqlite --help
 ```
 
 ### **Resource Usage**
 
 ```bash
 # Check resource usage
-docker stats 3AmigosMCP
+docker stats 3amigosmcp
 
 # Check memory usage
 docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
@@ -242,12 +241,12 @@ docker compose up -d
 
 ```bash
 # Test commands manually
-docker exec -i 3AmigosMCP npx @playwright/mcp@latest --help
-docker exec -i 3AmigosMCP npx @modelcontextprotocol/server-filesystem --help
-docker exec -i 3AmigosMCP npx @modelcontextprotocol/server-sqlite --help
+docker exec -i 3amigosmcp npx @playwright/mcp@latest --help
+docker exec -i 3amigosmcp npx @modelcontextprotocol/server-filesystem --help
+docker exec -i 3amigosmcp npx @ahmetbarut/mcp-database-server --help
 
 # Check container permissions
-docker exec -it 3AmigosMCP whoami
+docker exec -it 3amigosmcp whoami
 ```
 
 #### **3\. VS Code/Cursor Can't Connect**
@@ -261,15 +260,15 @@ docker exec -it 3AmigosMCP whoami
 
 ```bash
 # Enter container for debugging
-docker exec -it 3AmigosMCP /bin/bash
+docker exec -it 3amigosmcp /bin/bash
 
 # Check MCP processes
-docker exec 3AmigosMCP ps aux | grep mcp
+docker exec 3amigosmcp ps aux | grep mcp
 
 # Test MCP servers directly
-docker exec -i 3AmigosMCP npx @playwright/mcp@latest --port 8080 --host 0.0.0.0
-docker exec -i 3AmigosMCP npx @modelcontextprotocol/server-filesystem --root-dir /workspace
-docker exec -i 3AmigosMCP npx @modelcontextprotocol/server-sqlite --database /workspace/data.db
+docker exec -i 3amigosmcp npx @playwright/mcp@latest --port 8080 --host 0.0.0.0
+docker exec -i 3amigosmcp npx @modelcontextprotocol/server-filesystem /workspace
+docker exec -i 3amigosmcp npx @ahmetbarut/mcp-database-server --database /data/data.db
 ```
 
 ## 📊 **Performance & Reliability**
@@ -291,14 +290,14 @@ docker exec -i 3AmigosMCP npx @modelcontextprotocol/server-sqlite --database /wo
 2. **Configure your MCP client** using the command-based configuration above
 3. **Test the connections**:  
    ```bash
-   docker exec -i 3AmigosMCP npx @playwright/mcp@latest --help
-   docker exec -i 3AmigosMCP npx @modelcontextprotocol/server-filesystem --help
-   docker exec -i 3AmigosMCP npx @modelcontextprotocol/server-sqlite --help
+   docker exec -i 3amigosmcp npx @playwright/mcp@latest --help
+   docker exec -i 3amigosmcp npx @modelcontextprotocol/server-filesystem --help
+   docker exec -i 3amigosmcp npx @ahmetbarut/mcp-database-server --help
    ```
 4. **Monitor health**:  
    ```bash
    docker ps  
-   docker logs 3AmigosMCP
+   docker logs 3amigosmcp
    ```
 
 ## 📝 **Configuration Files**

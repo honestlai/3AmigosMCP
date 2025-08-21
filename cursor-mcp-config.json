@@ -5,7 +5,7 @@
       "args": [
         "exec",
         "-i",
-        "3AmigosMCP",
+        "3amigosmcp",
         "npx",
         "@playwright/mcp@latest",
         "--port",
@@ -16,7 +16,7 @@
         "--isolated"
       ],
       "env": {
-        "PLAYWRIGHT_BROWSERS_PATH": "/home/playwright/.cache/ms-playwright"
+        "PLAYWRIGHT_BROWSERS_PATH": "/ms-playwright"
       }
     },
     "Filesystem_MCP": {
@@ -24,11 +24,10 @@
       "args": [
         "exec",
         "-i",
-        "3AmigosMCP",
+        "3amigosmcp",
         "npx",
         "@modelcontextprotocol/server-filesystem",
-        "--root-dir",
-        "/home/playwright/workspace"
+        "/workspace"
       ]
     },
     "Database_MCP": {
@@ -36,11 +35,11 @@
       "args": [
         "exec",
         "-i",
-        "3AmigosMCP",
+        "3amigosmcp",
         "npx",
-        "@modelcontextprotocol/server-sqlite",
+        "@ahmetbarut/mcp-database-server",
         "--database",
-        "/home/playwright/data/data.db"
+        "/data/data.db"
       ]
     }
   }
