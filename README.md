@@ -88,16 +88,9 @@ docker compose up -d
         "3amigosmcp",
         "npx",
         "@playwright/mcp@latest",
-        "--port",
-        "8080",
-        "--host",
-        "0.0.0.0",
         "--headless",
         "--isolated"
-      ],
-      "env": {
-        "PLAYWRIGHT_BROWSERS_PATH": "/ms-playwright"
-      }
+      ]
     },
     "Filesystem_MCP": {
       "command": "docker",
