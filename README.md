@@ -90,7 +90,9 @@ docker compose up -d
         "@playwright/mcp@latest",
         "--headless",
         "--isolated",
-        "--no-sandbox"
+        "--no-sandbox",
+        "--browser",
+        "chromium"
       ]
     },
     "Filesystem_MCP": {
