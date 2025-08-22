@@ -1,7 +1,7 @@
 services:
   3amigosmcp:
     build: .
-    container_name: 3amigosmcp
+    container_name: 3AmigosMCP
     ports:
       - "8091:8081"  # Playwright MCP
       - "8092:8082"  # Filesystem MCP
@@ -12,9 +12,15 @@ services:
     environment:
       - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
     restart: unless-stopped
+    networks:
+      - Network-Bridge
     healthcheck:
       test: ["CMD", "/healthcheck.sh"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+
+networks:
+  Network-Bridge:
+    external: true

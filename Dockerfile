@@ -35,8 +35,17 @@ EXPOSE 8081 8082 8083
 COPY healthcheck.sh /healthcheck.sh
 RUN chmod +x /healthcheck.sh
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+# Copy startup script and HTTP server files
+COPY start-mcps.sh /start-mcps.sh
+COPY filesystem-server.js /filesystem-server.js
+COPY database-server.js /database-server.js
+RUN chmod +x /start-mcps.sh
+
+# Create necessary directories
+RUN mkdir -p /var/log/mcp /var/run
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD /healthcheck.sh
 
-# Default command
-CMD ["tail", "-f", "/dev/null"]
+# Default command - start MCP servers
+CMD ["/start-mcps.sh"]
