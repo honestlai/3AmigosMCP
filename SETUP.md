@@ -24,7 +24,7 @@ Copy the configuration from `cursor-mcp-config.json` to your Cursor/VS Code MCP 
 
 ## Container Information
 
-- **Container Name**: `3amigosmcp`
+- **Container Name**: `3AmigosMCP`
 - **Ports**: 
   - 8091: Playwright MCP
   - 8092: Filesystem MCP  
@@ -84,7 +84,7 @@ docker compose up -d
 
 ### MCP Connection Issues
 - Verify container is running: `docker ps`
-- Check health status: `docker inspect --format='{{.State.Health.Status}}' 3amigosmcp`
+- Check health status: `docker inspect --format='{{.State.Health.Status}}' 3AmigosMCP`
 - Test individual MCPs using the test script
 
 ### Port Conflicts
