@@ -8,6 +8,10 @@ echo "Starting 3AmigosMCP servers..."
 # Create log directory
 mkdir -p /var/log/mcp
 
+# Ensure workspace directory has proper permissions
+chmod 755 /workspace 2>/dev/null || true
+chmod 755 /data 2>/dev/null || true
+
 # Function to start MCP server with logging
 start_mcp_server() {
     local name=$1

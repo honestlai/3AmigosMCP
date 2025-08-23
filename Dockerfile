@@ -22,8 +22,10 @@ RUN npm install -g @playwright/mcp@latest \
 # Install Playwright browsers
 RUN npx playwright install --with-deps
 
-# Create workspace directory
-RUN mkdir -p /workspace /data
+# Create workspace directory with proper permissions
+RUN mkdir -p /workspace /data && \
+    chmod 755 /workspace && \
+    chmod 755 /data
 
 # Set working directory
 WORKDIR /workspace

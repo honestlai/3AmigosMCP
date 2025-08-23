@@ -34,9 +34,9 @@ fi
 #     exit 1
 # fi
 
-# Check if Filesystem MCP package is available (stdio-only)
-if ! npx @modelcontextprotocol/server-filesystem /workspace &> /dev/null; then
-    echo "Filesystem MCP package not available"
+# Check if Filesystem MCP package is available and can access workspace
+if ! timeout 5s npx @modelcontextprotocol/server-filesystem /workspace &> /dev/null; then
+    echo "Filesystem MCP package not available or cannot access workspace"
     exit 1
 fi
 
