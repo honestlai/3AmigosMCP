@@ -7,8 +7,8 @@ services:
       - "8092:8082"  # Filesystem MCP
       - "8093:8083"  # Database MCP
     volumes:
-      - ./workspace:/workspace:rw
-      - ./data:/data:rw
+      - /workspace:/workspace:rw
+      - data:/data:rw
     environment:
       - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
     restart: unless-stopped
@@ -24,3 +24,6 @@ services:
 networks:
   Network-Bridge:
     external: true
+
+volumes:
+  data:

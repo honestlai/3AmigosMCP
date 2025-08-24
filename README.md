@@ -20,7 +20,8 @@ I feel like moving forward most small to medium sized projects I'll be building 
 
 📁 **Filesystem** - The File Wrangler
 - File and directory operations
-- Read/write access to your workspace
+- Read/write access to your local filesystem workspace
+- Direct access to codebases and development files
 - Secure access control and permissions
 - File watching and monitoring
 - Batch file operations
@@ -236,9 +237,11 @@ ports:
 
 ```yaml
 volumes:
-  - ./workspace:/workspace  # Filesystem MCP root
-  - ./data:/data            # Database storage
+  - /workspace:/workspace:rw  # Local filesystem workspace access
+  - data:/data:rw            # Database storage (persistent volume)
 ```
+
+The workspace volume now provides direct access to your local filesystem workspace, allowing other agents and tools to access codebases and files in your development environment. The data volume persists database files across container restarts.
 
 ## 🔍 Troubleshooting
 
