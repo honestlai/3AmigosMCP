@@ -116,7 +116,9 @@ docker compose up -d
         "npx",
         "@ahmetbarut/mcp-database-server",
         "--database",
-        "/data/data.db"
+        "/data/data.db",
+        "--allowed-directories",
+        "/workspace"
       ]
     }
   }
@@ -201,7 +203,7 @@ const files = await filesystem.listDir({ path: "/workspace" });
 ### Database Operations
 
 ```javascript
-// Execute a query
+// Execute a query on the default database
 const results = await database.query({ 
   sql: "SELECT * FROM users WHERE active = true" 
 });
@@ -210,6 +212,18 @@ const results = await database.query({
 await database.execute({ 
   sql: "INSERT INTO logs (message, timestamp) VALUES (?, ?)",
   params: ["User logged in", new Date().toISOString()]
+});
+
+// Connect to a database in your workspace
+await database.connect({
+  connection_name: "workspace_db",
+  database: "/workspace/myproject/database.db"
+});
+
+// Execute queries on workspace database
+const workspaceResults = await database.execute_query({
+  connection_name: "workspace_db",
+  query: "SELECT * FROM projects WHERE status = 'active'"
 });
 ```
 
@@ -241,7 +255,19 @@ volumes:
   - data:/data:rw            # Database storage (persistent volume)
 ```
 
-The workspace volume now provides direct access to your local filesystem workspace, allowing other agents and tools to access codebases and files in your development environment. The data volume persists database files across container restarts.
+The workspace volume provides direct access to your local filesystem workspace, allowing both the Filesystem MCP and Database MCP to access files and databases within your development environment. The data volume persists database files across container restarts.
+
+### Database MCP Workspace Access
+
+The Database MCP is configured with `--allowed-directories /workspace` to enable access to databases stored within your workspace directory. This is essential for:
+
+- **Development Databases**: Access SQLite databases in your project directories
+- **Database Scripts**: Execute SQL files located in your workspace
+- **Schema Files**: Read database schema definitions and migration scripts
+- **Test Data**: Access test databases and fixtures in your project structure
+- **Configuration**: Read database configuration files from your workspace
+
+This configuration allows the Database MCP to work seamlessly with databases that are part of your development workflow, not just the persistent `/data` volume.
 
 ## 🔍 Troubleshooting
 

@@ -35,7 +35,9 @@
         "npx",
         "@ahmetbarut/mcp-database-server",
         "--database",
-        "/data/data.db"
+        "/data/data.db",
+        "--allowed-directories",
+        "/workspace"
       ]
     }
   }
