@@ -86,7 +86,7 @@ docker compose up -d
       "args": [
         "exec",
         "-i",
-        "3amigosmcp",
+        "3AmigosMCP",
         "npx",
         "@playwright/mcp@latest",
         "--headless",
@@ -101,7 +101,7 @@ docker compose up -d
       "args": [
         "exec",
         "-i",
-        "3amigosmcp",
+        "3AmigosMCP",
         "npx",
         "@modelcontextprotocol/server-filesystem",
         "/workspace"
@@ -112,7 +112,7 @@ docker compose up -d
       "args": [
         "exec",
         "-i",
-        "3amigosmcp",
+        "3AmigosMCP",
         "npx",
         "@ahmetbarut/mcp-database-server",
         "--database",
@@ -275,13 +275,13 @@ This configuration allows the Database MCP to work seamlessly with databases tha
 
 ```bash
 # Check container status
-docker ps | grep 3amigosmcp
+docker ps | grep 3AmigosMCP
 
 # View logs
-docker logs 3amigosmcp
+docker logs 3AmigosMCP
 
 # Health check
-docker inspect --format='{{.State.Health.Status}}' 3amigosmcp
+docker inspect --format='{{.State.Health.Status}}' 3AmigosMCP
 
 # Test all MCPs
 ./test-mcps.sh
