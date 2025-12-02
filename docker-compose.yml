@@ -11,6 +11,7 @@ services:
       - data:/data:rw
     environment:
       - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+      - PLAYWRIGHT_CHROME_CHANNEL=chrome
     restart: unless-stopped
     networks:
       - Network-Bridge

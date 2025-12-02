@@ -93,7 +93,7 @@ docker compose up -d
         "--isolated",
         "--no-sandbox",
         "--browser",
-        "chromium"
+        "chrome"
       ]
     },
     "Filesystem_MCP": {
